@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D-Hand-Tracked-Particle</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css"/> 
+</head>
+
+<body>
+
+  <div id="app">
+
+    <!-- Webcam input -->
+    <video id="webcam" autoplay playsinline muted></video>
+
+    <!-- 3D canvas -->
+    <canvas id="scene"></canvas>
+
+    <!-- UI overlays -->
+    <div id="vignette"></div>
+    <div id="scanlines"></div>
+    <div id="grid-bg"></div>
+
+    <!-- Loading screen -->
+    <div id="status-screen">
+      <div class="status-content">
+
+        <div class="orb-loader">
+          <div class="orb-core"></div>
+          <div class="orb-ring"></div>
+          <div class="orb-ring ring-2"></div>
+        </div>
+
+        <h1 class="brand">3D-Interactive-Particles</h1>
+        <p id="status-text">Initializing camera…</p>
+
+        <button id="start-btn" class="hidden">Begin</button>
+
+      </div>
+    </div>
+
+    <!-- HUD -->
+    <div id="hud">
+      <div class="hud-title">Interactive 3D Particles</div>
+      <div class="hud-hint" id="hud-hint">Allow camera access to begin</div>
+
+      <button id="fullscreen-btn" title="Fullscreen">⛶</button>
+      <button id="sound-btn" title="Sound">🔇</button>
+    </div>
+
+    <div id="shape-label"></div>
+
+    <div id="gesture-guide">
+      <div class="gesture-row">Sphere</div>
+      <div class="gesture-row">Heart</div>
+      <div class="gesture-row">Singularity</div>
+      <div class="gesture-row">Venus</div>
+    </div>
+
+  </div>
+
+  <!-- ================= LIBRARIES ================= -->
+
+  <!-- Three.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <!-- MediaPipe Hands -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+
+  <script src="shapeGenerator.js"></script>
+  <script src="particleSystem3D.js"></script>
+  <script src="audioEngine.js"></script>
+  <script src="gestureRecognizer.js"></script>
+  <script src="gestureDetector.js"></script>
+
+  <!-- ================= DEBUG SAFETY ================= -->
+  <script>
+    window.addEventListener("error", function (e) {
+      const status = document.getElementById("status-text");
+      if (status) {
+        status.innerText = "Error: " + e.message;
+      }
+      console.error(e.message);
+    });
+  </script>
+
+</body>
+</html>

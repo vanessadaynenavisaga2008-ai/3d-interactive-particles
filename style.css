@@ -1,0 +1,333 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --neon-cyan: #ff00bf;
+  --neon-pink: #5b0056;
+  --neon-purple: #8a2be2;
+  --bg-black: #050003;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  background: var(--bg-black);
+  overflow: hidden;
+  font-family: 'Rajdhani', sans-serif;
+}
+
+#app {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background: var(--bg-black);
+}
+
+/* Webcam feed: hidden visually, mirrored, drives tracking only */
+#webcam {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+  opacity: 0; /* set to ~0.08 if you want a faint ghost of yourself visible */
+  pointer-events: none;
+}
+
+#scene {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ---------- Cyberpunk chrome overlays ---------- */
+
+#vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center,
+    rgba(0,0,0,0) 40%,
+    rgba(0,0,0,0.55) 85%,
+    rgba(0,0,0,0.9) 100%);
+  z-index: 5;
+}
+
+#scanlines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 6;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.025) 0px,
+    rgba(255,255,255,0.025) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  mix-blend-mode: overlay;
+}
+
+#grid-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background-image:
+    linear-gradient(rgba(0,240,255,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,240,255,0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+  opacity: 0.4;
+}
+
+/* ---------- Status / loading screen ---------- */
+
+#status-screen {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(ellipse at center, #0a0a14 0%, #030307 100%);
+  transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+
+#status-screen.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.status-content {
+  text-align: center;
+}
+
+.orb-loader {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  margin: 0 auto 30px;
+}
+
+.orb-core {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 50px;
+  height: 50px;
+  margin: -25px 0 0 -25px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 0%, var(--neon-cyan) 40%, var(--neon-purple) 100%);
+  box-shadow: 0 0 30px 10px var(--neon-cyan), 0 0 60px 20px var(--neon-purple);
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+.orb-ring {
+  position: absolute;
+  inset: 0;
+  border: 2px solid rgba(0,240,255,0.4);
+  border-radius: 50%;
+  animation: spin 3s linear infinite;
+}
+
+.ring-2 {
+  inset: 18px;
+  border-color: rgba(255,0,230,0.35);
+  animation-duration: 4s;
+  animation-direction: reverse;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.25); opacity: 0.7; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.brand {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 900;
+  font-size: 2.4rem;
+  letter-spacing: 4px;
+  color: #fff;
+  text-shadow: 0 0 15px var(--neon-cyan), 0 0 30px var(--neon-cyan);
+}
+
+.brand span {
+  color: var(--neon-pink);
+  text-shadow: 0 0 15px var(--neon-pink), 0 0 30px var(--neon-pink);
+}
+
+#status-text {
+  margin-top: 12px;
+  color: #aee9ff;
+  font-size: 1rem;
+  letter-spacing: 1px;
+  opacity: 0.85;
+}
+
+#start-btn {
+  margin-top: 28px;
+  padding: 12px 36px;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.9rem;
+  letter-spacing: 2px;
+  color: #00f0ff;
+  background: rgba(0,240,255,0.08);
+  border: 1px solid var(--neon-cyan);
+  border-radius: 30px;
+  cursor: pointer;
+  box-shadow: 0 0 15px rgba(0,240,255,0.4);
+  transition: all 0.25s ease;
+}
+
+#start-btn:hover {
+  background: rgba(0,240,255,0.2);
+  box-shadow: 0 0 25px rgba(0,240,255,0.7);
+  transform: scale(1.05);
+}
+
+#start-btn.hidden {
+  display: none;
+}
+
+/* ---------- HUD ---------- */
+
+#hud {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px;
+  pointer-events: none;
+}
+
+.hud-title {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: 3px;
+  color: rgba(255,255,255,0.85);
+  text-shadow: 0 0 10px rgba(0,240,255,0.6);
+}
+
+.hud-title span {
+  color: var(--neon-pink);
+}
+
+.hud-hint {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 22px;
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.6);
+  letter-spacing: 1px;
+  transition: opacity 0.5s ease;
+}
+
+#fullscreen-btn, #sound-btn {
+  pointer-events: all;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(0,240,255,0.3);
+  color: #aee9ff;
+  font-size: 1.1rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  margin-left: 8px;
+  transition: all 0.2s ease;
+}
+
+#fullscreen-btn:hover, #sound-btn:hover {
+  background: rgba(0,240,255,0.15);
+  box-shadow: 0 0 15px rgba(0,240,255,0.5);
+}
+
+@media (max-width: 600px) {
+  .brand { font-size: 1.8rem; }
+  .hud-hint { font-size: 0.7rem; top: 18px; }
+  .hud-title { font-size: 0.9rem; }
+}
+
+/* ---------- Shape label (appears briefly on morph) ---------- */
+
+#shape-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 12;
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  font-size: 1.4rem;
+  letter-spacing: 4px;
+  color: rgba(255,255,255,0.9);
+  text-shadow: 0 0 20px var(--neon-cyan), 0 0 40px var(--neon-pink);
+  text-transform: uppercase;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+#shape-label.visible {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1.05);
+}
+
+/* ---------- Gesture guide (bottom corner reference) ---------- */
+
+#gesture-guide {
+  position: absolute;
+  bottom: 18px;
+  right: 18px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 16px;
+  background: rgba(10,10,20,0.45);
+  border: 1px solid rgba(0,240,255,0.2);
+  border-radius: 12px;
+  backdrop-filter: blur(6px);
+  pointer-events: none;
+}
+
+.gesture-row {
+  font-size: 0.78rem;
+  letter-spacing: 0.5px;
+  color: rgba(255,255,255,0.75);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gesture-icon {
+  font-size: 1rem;
+}
+
+@media (max-width: 600px) {
+  #gesture-guide {
+    bottom: 14px;
+    right: 14px;
+    padding: 8px 12px;
+  }
+  .gesture-row { font-size: 0.68rem; }
+  #shape-label { font-size: 1.1rem; letter-spacing: 2px; }
+}
